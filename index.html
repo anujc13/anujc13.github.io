@@ -1,0 +1,502 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Photo Planner">
+<meta name="theme-color" content="#1d2438">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="icon.png">
+<link rel="icon" href="icon.png">
+<title>Ragini's Photo Planner</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600&family=Atkinson+Hyperlegible:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root{--paper:#faf5ec;--card:#fff;--ink:#2b2420;--soft:#6e6259;--line:#eadfcd;--gold:#e0a133;--gold-bg:#fdf1d9;--blue:#3f63a8;--blue-bg:#e6edf8;--night:#1d2438}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--paper);color:var(--ink);font:19px/1.55 "Atkinson Hyperlegible",system-ui,sans-serif;-webkit-text-size-adjust:100%}
+h1,h2,h3{font-family:Fraunces,Georgia,serif;font-weight:600;margin:0;line-height:1.2}
+a{color:inherit}
+.wrap{max-width:720px;margin:0 auto;padding:22px 18px 60px}
+.hello{padding:26px 22px;border-radius:22px;color:#fff;background:linear-gradient(160deg,#1d2438 0%,#3a4a7a 55%,#c9814a 100%);margin-bottom:26px}
+.hello h1{font-size:32px}
+.hello p{margin:6px 0 0;font-size:18px;opacity:.9}
+.section-title{font-size:25px;margin:30px 4px 6px}
+.section-sub{color:var(--soft);margin:0 4px 14px;font-size:17px}
+.event{background:var(--card);border:1px solid var(--line);border-radius:20px;padding:20px;margin-bottom:16px;box-shadow:0 2px 6px rgba(60,40,20,.05)}
+.event .when{display:inline-block;font-weight:700;font-size:15px;letter-spacing:.04em;text-transform:uppercase;padding:4px 12px;border-radius:999px;background:var(--gold-bg);color:#7a5210;margin-bottom:10px}
+.event.moon .when{background:var(--blue-bg);color:#2c4a85}
+.event.soon .when{background:#c0392b;color:#fff}
+.event h3{font-size:24px;display:flex;gap:12px;align-items:center}
+.event h3 svg{flex:none}
+.event .where{font-size:19px;margin:8px 0 2px}
+.event .where b{font-weight:700}
+.event p{margin:8px 0 0;color:#40362f}
+.bethere{margin-top:14px;padding:12px 14px;border-radius:14px;background:#f6efe2;font-size:19px}
+.bethere b{font-size:22px}
+.also{margin-top:10px;font-size:16px;color:var(--soft)}
+.btns{display:flex;gap:10px;flex-wrap:wrap;margin-top:16px}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;white-space:nowrap;min-height:52px;padding:12px 18px;border-radius:14px;border:2px solid var(--line);background:#fff;font:inherit;font-size:18px;font-weight:700;text-decoration:none;color:var(--ink);cursor:pointer;flex:1 1 150px}
+.btn.main{background:var(--ink);color:#fff;border-color:var(--ink)}
+.event.pick .when{background:var(--gold-bg);color:#7a5210}.event.pick.soon .when{background:#c0392b;color:#fff}
+.sky{display:flex;gap:12px;align-items:center;margin-top:12px;padding:12px 14px;border-radius:14px;background:#eef3fb}.sky span{font-size:30px}.sky b{display:block;font-size:19px}.sky small{color:var(--soft);font-size:15px}.sky.good{background:#eaf5ec}.sky.bad{background:#f8e9e4}
+.why{margin:10px 0 0;padding-left:22px;color:#40362f}.why li{margin:3px 0}
+.times2{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:14px}
+.times2 div{background:#f6efe2;border-radius:14px;padding:10px 12px}
+.times2 span{display:block;font-size:14px;color:var(--soft)}.times2 b{font-size:19px}
+@media (max-width:480px){.times2{grid-template-columns:1fr 1fr}.times2 div:last-child{grid-column:1/-1}}
+.today{background:var(--card);border:1px solid var(--line);border-radius:20px;padding:20px}
+.today select{width:100%;font:inherit;font-size:20px;font-weight:700;padding:12px 14px;border-radius:14px;border:2px solid var(--line);background:#fffdf8;margin-bottom:14px;color:var(--ink)}
+.row{display:flex;align-items:center;gap:14px;padding:13px 4px;border-top:1px solid var(--line)}
+.row:first-of-type{border-top:0}
+.row .ic{width:42px;height:42px;border-radius:12px;display:flex;align-items:center;justify-content:center;flex:none;font-size:22px}
+.row .lbl{flex:1;font-size:18px}
+.row .lbl small{display:block;color:var(--soft);font-size:15px}
+.row .tm{font-weight:700;font-size:20px;text-align:right;white-space:nowrap}
+.daynav{display:flex;gap:10px;margin-bottom:14px}
+.daynav button{flex:1;min-height:50px;border-radius:14px;border:2px solid var(--line);background:#fff;font:inherit;font-size:17px;font-weight:700;cursor:pointer;color:var(--ink)}
+.daynav button.on{background:var(--ink);color:#fff;border-color:var(--ink)}
+.season{background:var(--card);border:1px solid var(--line);border-radius:20px;padding:18px 20px}
+.season li{margin:6px 0}
+.season ul{margin:6px 0 0;padding-left:22px}
+.foot{color:var(--soft);font-size:15px;margin-top:34px;text-align:center}
+.empty{color:var(--soft);padding:10px 4px}
+.more{width:100%;margin-top:4px}
+@media (max-width:480px){.row{flex-wrap:wrap}.row .tm{flex-basis:100%;text-align:left;padding-left:56px;margin-top:-6px;font-size:19px}html,body{font-size:18px}.hello h1{font-size:28px}.event h3{font-size:22px}}
+</style>
+</head>
+<body>
+<div class="wrap" id="app"></div>
+<script>
+/* Sun & moon math, adapted from the SunCalc algorithms (V. Agafonkin, BSD-2) */
+var Astro = (function(){
+  var PI=Math.PI, sin=Math.sin, cos=Math.cos, tan=Math.tan, asin=Math.asin, atan=Math.atan2, acos=Math.acos, rad=PI/180;
+  var dayMs=864e5, J1970=2440588, J2000=2451545, e=rad*23.4397;
+  function toJulian(d){return d.valueOf()/dayMs-0.5+J1970}
+  function fromJulian(j){return new Date((j+0.5-J1970)*dayMs)}
+  function toDays(d){return toJulian(d)-J2000}
+  function rightAscension(l,b){return atan(sin(l)*cos(e)-tan(b)*sin(e),cos(l))}
+  function declination(l,b){return asin(sin(b)*cos(e)+cos(b)*sin(e)*sin(l))}
+  function azimuth(H,phi,dec){return atan(sin(H),cos(H)*sin(phi)-tan(dec)*cos(phi))}
+  function altitude(H,phi,dec){return asin(sin(phi)*sin(dec)+cos(phi)*cos(dec)*cos(H))}
+  function sidereal(d,lw){return rad*(280.16+360.9856235*d)-lw}
+  function refraction(h){if(h<0)h=0;return 0.0002967/tan(h+0.00312536/(h+0.08901179))}
+  function solarMeanAnomaly(d){return rad*(357.5291+0.98560028*d)}
+  function eclipticLongitude(M){var C=rad*(1.9148*sin(M)+0.02*sin(2*M)+0.0003*sin(3*M));return M+C+rad*102.9372+PI}
+  function sunCoords(d){var M=solarMeanAnomaly(d),L=eclipticLongitude(M);return{dec:declination(L,0),ra:rightAscension(L,0)}}
+  function toCompass(az){var c=az/rad+180;return (c%360+360)%360}
+  function sunPosition(date,lat,lng){
+    var lw=rad*-lng,phi=rad*lat,d=toDays(date),c=sunCoords(d),H=sidereal(d,lw)-c.ra;
+    return{azimuth:toCompass(azimuth(H,phi,c.dec)),altitude:altitude(H,phi,c.dec)/rad};
+  }
+  var J0=0.0009;
+  function julianCycle(d,lw){return Math.round(d-J0-lw/(2*PI))}
+  function approxTransit(Ht,lw,n){return J0+(Ht+lw)/(2*PI)+n}
+  function solarTransitJ(ds,M,L){return J2000+ds+0.0053*sin(M)-0.0069*sin(2*L)}
+  function hourAngle(h,phi,d){return acos((sin(h)-sin(phi)*sin(d))/(cos(phi)*cos(d)))}
+  var ANGLES=[[-0.833,'sunrise','sunset'],[6,'goldenAMEnd','goldenPMStart'],[-4,'goldenAMStart','goldenPMEnd'],
+              [-6,'dawn','dusk'],[-8,'blueAMStart','bluePMEnd'],[-12,'nauticalDawn','nauticalDusk'],[-18,'nightEnd','night']];
+  function sunTimes(date,lat,lng){
+    var lw=rad*-lng,phi=rad*lat,d=toDays(date),n=julianCycle(d,lw),ds=approxTransit(0,lw,n),
+        M=solarMeanAnomaly(ds),L=eclipticLongitude(M),dec=declination(L,0),Jnoon=solarTransitJ(ds,M,L);
+    var r={solarNoon:fromJulian(Jnoon)};
+    ANGLES.forEach(function(a){
+      var w=hourAngle(a[0]*rad,phi,dec);
+      if(isNaN(w)){r[a[1]]=null;r[a[2]]=null;return}
+      var Jset=solarTransitJ(approxTransit(w,lw,n),M,L),Jrise=Jnoon-(Jset-Jnoon);
+      r[a[1]]=fromJulian(Jrise);r[a[2]]=fromJulian(Jset);
+    });
+    r.blueAMEnd=r.goldenAMStart; r.bluePMStart=r.goldenPMEnd;
+    return r;
+  }
+  function moonCoords(d){
+    var L=rad*(218.316+13.176396*d),M=rad*(134.963+13.064993*d),F=rad*(93.272+13.229350*d),
+        l=L+rad*6.289*sin(M),b=rad*5.128*sin(F),dt=385001-20905*cos(M);
+    return{ra:rightAscension(l,b),dec:declination(l,b),dist:dt};
+  }
+  function moonPosition(date,lat,lng){
+    var lw=rad*-lng,phi=rad*lat,d=toDays(date),c=moonCoords(d),H=sidereal(d,lw)-c.ra,h=altitude(H,phi,c.dec);
+    h=h+refraction(h);
+    return{azimuth:toCompass(azimuth(H,phi,c.dec)),altitude:h/rad};
+  }
+  function moonIllumination(date){
+    var d=toDays(date),s=sunCoords(d),m=moonCoords(d),sdist=149598000,
+        phi=acos(sin(s.dec)*sin(m.dec)+cos(s.dec)*cos(m.dec)*cos(s.ra-m.ra)),
+        inc=atan(sdist*sin(phi),m.dist-sdist*cos(phi)),
+        angle=atan(cos(s.dec)*sin(s.ra-m.ra),sin(s.dec)*cos(m.dec)-cos(s.dec)*sin(m.dec)*cos(s.ra-m.ra));
+    return{fraction:(1+cos(inc))/2,phase:0.5+0.5*inc*(angle<0?-1:1)/PI};
+  }
+  /* Galactic centre (Milky Way core): RA 266.4°, Dec −29.0° */
+  function mwAltitude(date,lat,lng){
+    var lw=rad*-lng,phi=rad*lat,d=toDays(date),H=sidereal(d,lw)-266.405*rad;
+    return altitude(H,phi,-29.008*rad)/rad;
+  }
+  /* Scan for rise/set crossings of a body between t0 and t1 */
+  function crossings(fn,t0,t1,stepMin,h0){
+    var out={rise:null,set:null},step=stepMin*6e4,prevT=t0,prev=fn(new Date(t0))-h0;
+    for(var t=t0+step;t<=t1;t+=step){
+      var cur=fn(new Date(t))-h0;
+      if(prev<0&&cur>=0&&!out.rise){out.rise=new Date(prevT+step*(-prev/(cur-prev)))}
+      if(prev>=0&&cur<0&&!out.set){out.set=new Date(prevT+step*(prev/(prev-cur)))}
+      prev=cur;prevT=t;
+    }
+    return out;
+  }
+  function phaseName(p){
+    if(p<0.03||p>0.97)return'New moon';if(p<0.22)return'Waxing crescent';if(p<0.28)return'First quarter';
+    if(p<0.47)return'Waxing gibbous';if(p<0.53)return'Full moon';if(p<0.72)return'Waning gibbous';
+    if(p<0.78)return'Last quarter';return'Waning crescent';
+  }
+  return{sunTimes:sunTimes,sunPosition:sunPosition,moonPosition:moonPosition,moonIllumination:moonIllumination,
+         mwAltitude:mwAltitude,crossings:crossings,phaseName:phaseName};
+})();
+</script>
+<script>
+(function(){
+var SPOTS=[{"id": "gb", "name": "Great Beds Lighthouse", "lat": 40.4787, "lon": -74.2702, "subjects": ["moon", "sunrise", "sunset", "blue", "crescent"], "months": [], "bearing": 60, "n": 21, "sub": {"sunrise": 8, "crescent": 1, "moon": 10, "blue": 1, "sunset": 1}, "area": "Raritan Bay Waterfront Park, South Amboy", "hist": {"sunrise": {"n": 8, "m": [0, 0, 0, 2, 0, 0, 0, 1, 2, 0, 0, 3], "r": 4.25}, "crescent": {"n": 1, "m": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0], "r": 5.0}, "moon": {"n": 10, "m": [1, 0, 0, 1, 0, 1, 0, 1, 0, 3, 3, 0], "r": 4.1}, "blue": {"n": 1, "m": [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], "r": 3.0}, "sunset": {"n": 1, "m": [0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0], "r": 2.0}}, "faces": "E", "zone": "bay"}, {"id": "mb", "name": "Around home", "lat": 40.3145, "lon": -74.2485, "subjects": ["sunrise", "sunset", "moon", "crescent", "flowers", "snow", "night", "blue"], "months": [], "bearing": null, "n": 131, "sub": {"sunset": 28, "moon": 38, "crescent": 11, "snow": 8, "sunrise": 35, "flowers": 6, "night": 4, "blue": 1}, "area": "Marlboro", "hist": {"sunset": {"n": 28, "m": [0, 3, 0, 3, 5, 4, 3, 3, 2, 1, 0, 4], "r": 3.29}, "moon": {"n": 38, "m": [0, 0, 3, 5, 3, 8, 1, 6, 1, 2, 5, 4], "r": 3.11}, "crescent": {"n": 11, "m": [1, 3, 1, 2, 0, 0, 1, 1, 1, 1, 0, 0], "r": 3.45}, "snow": {"n": 8, "m": [4, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 2], "r": 3.38}, "sunrise": {"n": 35, "m": [5, 2, 3, 1, 1, 4, 2, 5, 1, 3, 4, 4], "r": 3.31}, "flowers": {"n": 6, "m": [0, 0, 0, 4, 2, 0, 0, 0, 0, 0, 0, 0], "r": 3.33}, "night": {"n": 4, "m": [0, 0, 0, 1, 1, 0, 0, 0, 1, 0, 1, 0], "r": 3.0}, "blue": {"n": 1, "m": [0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0], "r": 4.0}}, "faces": "", "zone": "home"}, {"id": "sh", "name": "Sandy Hook", "lat": 40.4037, "lon": -73.9915, "subjects": ["sunset", "sunrise", "moon", "crescent", "snow", "night", "foliage"], "months": [], "bearing": null, "n": 30, "sub": {"crescent": 2, "snow": 2, "sunset": 13, "night": 1, "sunrise": 7, "foliage": 1, "moon": 4}, "area": "Gateway National Recreation Area", "hist": {"crescent": {"n": 2, "m": [0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0], "r": 4.5}, "snow": {"n": 2, "m": [1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], "r": 3.0}, "sunset": {"n": 13, "m": [0, 0, 2, 1, 1, 1, 0, 1, 2, 0, 1, 4], "r": 3.92}, "night": {"n": 1, "m": [0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0], "r": 4.0}, "sunrise": {"n": 7, "m": [1, 0, 0, 0, 0, 2, 0, 1, 1, 0, 0, 2], "r": 3.43}, "foliage": {"n": 1, "m": [0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0], "r": 5.0}, "moon": {"n": 4, "m": [0, 0, 2, 0, 0, 0, 1, 0, 1, 0, 0, 0], "r": 4.0}}, "faces": "B", "zone": "bay"}, {"id": "cn", "name": "Colts Neck farms", "lat": 40.2881, "lon": -74.176, "subjects": ["sunrise", "foliage", "wildlife", "night", "sunset", "moon", "crescent"], "months": [], "bearing": null, "n": 26, "sub": {"sunrise": 16, "night": 1, "sunset": 3, "moon": 3, "foliage": 2, "crescent": 1}, "area": "Colts Neck", "hist": {"sunrise": {"n": 16, "m": [5, 1, 0, 0, 2, 0, 1, 0, 1, 0, 4, 2], "r": 3.44}, "night": {"n": 1, "m": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0], "r": 5.0}, "sunset": {"n": 3, "m": [0, 0, 0, 0, 1, 0, 1, 1, 0, 0, 0, 0], "r": 2.67}, "moon": {"n": 3, "m": [0, 0, 1, 0, 0, 0, 2, 0, 0, 0, 0, 0], "r": 3.33}, "foliage": {"n": 2, "m": [0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0], "r": 4.0}, "crescent": {"n": 1, "m": [0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0], "r": 4.0}}, "faces": "", "zone": "home"}, {"id": "hp", "name": "Holmdel Park", "lat": 40.3698, "lon": -74.1822, "subjects": ["flowers", "sunrise", "sunset", "foliage", "snow", "moon", "crescent"], "months": [4, 10, 11], "bearing": null, "n": 12, "sub": {"moon": 1, "crescent": 2, "sunrise": 1, "snow": 2, "sunset": 2, "flowers": 3, "foliage": 1}, "area": "Holmdel", "hist": {"moon": {"n": 1, "m": [0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0], "r": 4.0}, "crescent": {"n": 2, "m": [0, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0], "r": 3.5}, "sunrise": {"n": 1, "m": [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], "r": 3.0}, "snow": {"n": 2, "m": [2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], "r": 3.0}, "sunset": {"n": 2, "m": [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0], "r": 3.0}, "flowers": {"n": 3, "m": [0, 0, 0, 3, 0, 0, 0, 0, 0, 0, 0, 0], "r": 4.33}, "foliage": {"n": 1, "m": [0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], "r": 3.0}}, "faces": "", "zone": "home"}, {"id": "be", "name": "Belmar beach & pier", "lat": 40.1797, "lon": -74.0244, "subjects": ["sunrise", "moon", "blue", "sunset"], "months": [], "bearing": null, "n": 14, "sub": {"sunrise": 8, "blue": 2, "sunset": 2, "moon": 2}, "area": "Belmar", "hist": {"sunrise": {"n": 8, "m": [0, 0, 2, 1, 0, 1, 1, 0, 1, 0, 1, 1], "r": 3.75}, "blue": {"n": 2, "m": [1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0], "r": 3.5}, "sunset": {"n": 2, "m": [1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0], "r": 5.0}, "moon": {"n": 2, "m": [1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0], "r": 4.0}}, "faces": "E", "zone": "shore"}, {"id": "ap", "name": "Asbury Park beach", "lat": 40.2224, "lon": -74.0121, "subjects": ["sunrise", "golden", "sunset", "moon"], "months": [], "bearing": null, "n": 10, "sub": {"sunrise": 8, "sunset": 1, "moon": 1}, "area": "Asbury Park", "hist": {"sunrise": {"n": 8, "m": [0, 0, 0, 1, 0, 1, 2, 0, 2, 0, 0, 2], "r": 3.75}, "sunset": {"n": 1, "m": [0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0], "r": 3.0}, "moon": {"n": 1, "m": [0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0], "r": 2.0}}, "faces": "E", "zone": "shore"}, {"id": "mq", "name": "Manasquan jetty", "lat": 40.103, "lon": -74.034, "subjects": ["moon", "sunrise"], "months": [], "bearing": null, "n": 6, "sub": {"moon": 3, "sunrise": 3}, "area": "Manasquan Inlet", "hist": {"moon": {"n": 3, "m": [0, 0, 0, 0, 0, 1, 2, 0, 0, 0, 0, 0], "r": 4.67}, "sunrise": {"n": 3, "m": [0, 0, 0, 1, 0, 0, 1, 0, 1, 0, 0, 0], "r": 2.67}}, "faces": "E", "zone": "shore"}, {"id": "sl", "name": "Spring Lake", "lat": 40.1527, "lon": -74.0272, "subjects": ["sunrise", "flowers", "night", "sunset"], "months": [], "bearing": null, "n": 7, "sub": {"sunrise": 5, "night": 1, "sunset": 1}, "area": "Spring Lake & Sea Girt", "hist": {"sunrise": {"n": 5, "m": [0, 0, 0, 3, 0, 0, 0, 0, 0, 1, 1, 0], "r": 4.2}, "night": {"n": 1, "m": [0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0], "r": 3.0}, "sunset": {"n": 1, "m": [0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0], "r": 3.0}}, "faces": "E", "zone": "shore"}, {"id": "mr", "name": "Manasquan Reservoir", "lat": 40.1712, "lon": -74.204, "subjects": ["moon", "sunrise", "sunset", "crescent"], "months": [], "bearing": null, "n": 11, "sub": {"moon": 3, "sunset": 3, "sunrise": 3, "crescent": 2}, "area": "Howell", "hist": {"moon": {"n": 3, "m": [0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 1, 0], "r": 4.0}, "sunset": {"n": 3, "m": [0, 0, 0, 0, 0, 1, 0, 0, 2, 0, 0, 0], "r": 3.33}, "sunrise": {"n": 3, "m": [0, 0, 0, 0, 0, 0, 1, 1, 1, 0, 0, 0], "r": 4.33}, "crescent": {"n": 2, "m": [0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 1], "r": 2.5}}, "faces": "", "zone": "home"}, {"id": "fh", "name": "Freehold", "lat": 40.2146, "lon": -74.2986, "subjects": ["sunset", "crescent", "moon", "sunrise", "flowers"], "months": [], "bearing": null, "n": 13, "sub": {"sunset": 6, "sunrise": 2, "moon": 2, "crescent": 2, "flowers": 1}, "area": "Freehold", "hist": {"sunset": {"n": 6, "m": [2, 1, 0, 0, 0, 0, 0, 1, 0, 1, 0, 1], "r": 3.0}, "sunrise": {"n": 2, "m": [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0], "r": 3.5}, "moon": {"n": 2, "m": [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0], "r": 4.0}, "crescent": {"n": 2, "m": [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0], "r": 4.0}, "flowers": {"n": 1, "m": [0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0], "r": 3.0}}, "faces": "", "zone": "home"}, {"id": "ml", "name": "Manalapan", "lat": 40.2813, "lon": -74.3305, "subjects": ["sunset", "moon"], "months": [], "bearing": null, "n": 11, "sub": {"sunset": 9, "moon": 2}, "area": "Manalapan", "hist": {"sunset": {"n": 9, "m": [0, 2, 0, 1, 1, 0, 1, 0, 2, 0, 0, 2], "r": 3.33}, "moon": {"n": 2, "m": [0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], "r": 3.0}}, "faces": "", "zone": "home"}, {"id": "tp", "name": "Lake Topanemus", "lat": 40.2766, "lon": -74.2846, "subjects": ["foliage", "sunset", "sunrise", "blue"], "months": [5, 10, 11], "bearing": null, "n": 4, "sub": {"blue": 1, "sunrise": 2, "foliage": 1}, "area": "Freehold", "hist": {"blue": {"n": 1, "m": [0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], "r": 3.0}, "sunrise": {"n": 2, "m": [0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0], "r": 2.5}, "foliage": {"n": 1, "m": [0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0], "r": 5.0}}, "faces": "", "zone": "home"}, {"id": "th", "name": "Thompson Park", "lat": 40.3331, "lon": -74.1389, "subjects": ["sunrise", "moon", "night", "sunset"], "months": [10], "bearing": null, "n": 7, "sub": {"night": 1, "moon": 2, "sunrise": 2, "sunset": 2}, "area": "Lincroft", "hist": {"night": {"n": 1, "m": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1], "r": 3.0}, "moon": {"n": 2, "m": [0, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0], "r": 3.5}, "sunrise": {"n": 2, "m": [0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0], "r": 4.5}, "sunset": {"n": 2, "m": [0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0], "r": 3.0}}, "faces": "", "zone": "home"}, {"id": "cw", "name": "Cliffwood Beach", "lat": 40.4428, "lon": -74.218, "subjects": ["sunset", "sunrise", "blue"], "months": [], "bearing": null, "n": 5, "sub": {"sunset": 3, "sunrise": 1, "blue": 1}, "area": "Aberdeen", "hist": {"sunset": {"n": 3, "m": [0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 1, 0], "r": 3.67}, "sunrise": {"n": 1, "m": [0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0], "r": 3.0}, "blue": {"n": 1, "m": [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], "r": 2.0}}, "faces": "W", "zone": "bay"}, {"id": "kp", "name": "Keyport waterfront", "lat": 40.4376, "lon": -74.2047, "subjects": ["sunrise", "sunset", "blue", "city"], "months": [], "bearing": null, "n": 5, "sub": {"sunrise": 2, "sunset": 2, "blue": 1}, "area": "Keyport", "hist": {"sunrise": {"n": 2, "m": [0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1], "r": 4.5}, "sunset": {"n": 2, "m": [0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0], "r": 3.5}, "blue": {"n": 1, "m": [0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0], "r": 3.0}}, "faces": "W", "zone": "bay"}, {"id": "jc", "name": "Jersey City waterfront", "lat": 40.7114, "lon": -74.0647, "subjects": ["city", "sunrise", "blue"], "months": [], "bearing": 119, "n": 4, "sub": {"city": 3, "blue": 1}, "area": "Jersey City", "hist": {"city": {"n": 3, "m": [0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 1, 0], "r": 4.67}, "blue": {"n": 1, "m": [0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], "r": 4.0}}, "faces": "E", "zone": "city"}, {"id": "ak", "name": "Akshardham temple", "lat": 40.2186, "lon": -74.605, "subjects": ["sunset", "blue", "moon", "city"], "months": [10, 11], "bearing": null, "n": 3, "sub": {"moon": 1, "sunset": 2}, "area": "Robbinsville", "hist": {"moon": {"n": 1, "m": [0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0], "r": 3.0}, "sunset": {"n": 2, "m": [0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0], "r": 3.0}}, "faces": "", "zone": "west"}, {"id": "at", "name": "Atsion Lake", "lat": 39.7406, "lon": -74.7262, "subjects": ["foliage", "water", "sunset"], "months": [10, 11], "bearing": null, "n": 0, "sub": {}, "area": "Wharton State Forest", "hist": {}, "faces": "", "zone": "west"}];
+var WX=null;
+var ZONES={home:[40.3145,-74.2485],shore:[40.18,-74.02],bay:[40.44,-74.10],city:[40.7114,-74.0647],west:[40.22,-74.60]};
+var WX_KEY='rpp-forecast-v1';
+try{var cached=JSON.parse(localStorage.getItem(WX_KEY)||'null');if(cached&&Date.now()-cached.at<36*36e5)WX=cached.wx}catch(e){}
+function loadForecast(){
+  var names=Object.keys(ZONES),lat=names.map(function(n){return ZONES[n][0]}).join(','),lon=names.map(function(n){return ZONES[n][1]}).join(',');
+  var url='https://api.open-meteo.com/v1/forecast?latitude='+lat+'&longitude='+lon+
+    '&hourly=cloud_cover,cloud_cover_low,cloud_cover_high,precipitation_probability,snowfall&forecast_days=7&timezone=America%2FNew_York';
+  return fetch(url).then(function(r){if(!r.ok)throw new Error(r.status);return r.json()}).then(function(data){
+    var arr=Array.isArray(data)?data:[data],out={zones:{}};
+    names.forEach(function(n,zi){
+      var d=arr[zi],H=d&&d.hourly;if(!H)return;var z=out.zones[n]={};
+      var sp={lat:ZONES[n][0],lon:ZONES[n][1],id:'z'+n};
+      for(var i=0;i<7;i++){
+        var ymd=addDays(ymdOf(new Date()),i),T=sky(sp,ymd).T;
+        [['am',T.sunrise],['pm',T.sunset]].forEach(function(x){
+          if(!ok(x[1]))return;var p=parts(x[1]),hr=p.mi>=30?p.h+1:p.h,key=ymd+'T'+pad(hr)+':00',k=H.time.indexOf(key);if(k<0)return;
+          var rain=H.precipitation_probability[k]||0,snow=(H.snowfall[k]||0)>0?Math.max(rain,50):0;
+          z[ymd+x[0]]={c:Math.round(H.cloud_cover[k]),lo:Math.round(H.cloud_cover_low[k]),hi:Math.round(H.cloud_cover_high[k]),rain:snow?0:rain,snow:snow};
+        });
+      }
+    });
+    WX=out;try{localStorage.setItem(WX_KEY,JSON.stringify({at:Date.now(),wx:out}))}catch(e){}
+    cache={};chainCache={};render();
+  }).catch(function(){/* offline: keep last forecast or show without sky */});
+}
+var TZ='America/New_York';
+var byId={};SPOTS.forEach(function(s){byId[s.id]=s});
+
+/* ---------- helpers ---------- */
+function pad(n){return(n<10?'0':'')+n}
+var fParts=new Intl.DateTimeFormat('en-US',{timeZone:TZ,year:'numeric',month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit',hourCycle:'h23'});
+var fTime=new Intl.DateTimeFormat('en-US',{timeZone:TZ,hour:'numeric',minute:'2-digit'});
+function parts(d){var o={};fParts.formatToParts(d).forEach(function(p){o[p.type]=p.value});return{y:+o.year,m:+o.month,d:+o.day,h:+o.hour%24,mi:+o.minute}}
+function ymdOf(d){var p=parts(d);return p.y+'-'+pad(p.m)+'-'+pad(p.d)}
+function addDays(s,n){var a=s.split('-').map(Number),t=new Date(Date.UTC(a[0],a[1]-1,a[2]+n));return t.getUTCFullYear()+'-'+pad(t.getUTCMonth()+1)+'-'+pad(t.getUTCDate())}
+function dayName(s,long){var a=s.split('-').map(Number);return new Date(Date.UTC(a[0],a[1]-1,a[2],12)).toLocaleDateString('en-US',{timeZone:'UTC',weekday:long?'long':'short',month:long?'long':'short',day:'numeric'})}
+function t(d){return d?fTime.format(d):'—'}
+function ok(d){return d instanceof Date&&!isNaN(d)}
+function mins(a,b){return Math.round((b-a)/6e4)}
+function dir(deg){return['north','north-northeast','northeast','east-northeast','east','east-southeast','southeast','south-southeast','south','south-southwest','southwest','west-southwest','west','west-northwest','northwest','north-northwest'][Math.round(deg/22.5)%16]}
+function angDiff(a,b){var d=Math.abs(a-b)%360;return d>180?360-d:d}
+function beforeAfter(m,ev){var a=Math.abs(m);if(a<4)return'right at '+ev;return a+' minutes '+(m<0?'before ':'after ')+ev}
+
+/* ---------- sky for one spot on one day ---------- */
+var cache={};
+function sky(sp,ymd){
+  var k=sp.id+ymd;if(cache[k])return cache[k];
+  var a=ymd.split('-').map(Number),base=new Date(Date.UTC(a[0],a[1]-1,a[2],12)-sp.lon/15*36e5);
+  var T=Astro.sunTimes(base,sp.lat,sp.lon),noon=T.solarNoon.getTime();
+  var mfn=function(d){return Astro.moonPosition(d,sp.lat,sp.lon).altitude};
+  var c=Astro.crossings(mfn,noon-12*36e5,noon+12*36e5,10,0.133);
+  var ill=Astro.moonIllumination(T.sunset||T.solarNoon);
+  var r={T:T,rise:c.rise,set:c.set,f:ill.fraction,phase:ill.phase,
+    riseAz:c.rise?Astro.moonPosition(c.rise,sp.lat,sp.lon).azimuth:null,
+    sunRiseAz:ok(T.sunrise)?Astro.sunPosition(T.sunrise,sp.lat,sp.lon).azimuth:null,
+    sunSetAz:ok(T.sunset)?Astro.sunPosition(T.sunset,sp.lat,sp.lon).azimuth:null,
+    altDusk:ok(T.dusk)?mfn(T.dusk):-90,altDawn:ok(T.dawn)?mfn(T.dawn):-90,
+    azDusk:ok(T.dusk)?Astro.moonPosition(T.dusk,sp.lat,sp.lon).azimuth:0,azDawn:ok(T.dawn)?Astro.moonPosition(T.dawn,sp.lat,sp.lon).azimuth:0};
+  cache[k]=r;return r;
+}
+function likes(sp,subj){return (sp.sub[subj]||0)}
+function has(sp,s){return sp.subjects.indexOf(s)>=0}
+
+/* ---------- find your best photo moments ---------- */
+function findEvents(today,days){
+  var ev=[];
+  for(var i=0;i<days;i++){
+    var ymd=addDays(today,i);
+    // Full moon rising near sunset
+    var moonC=[];
+    SPOTS.forEach(function(sp){
+      if(!has(sp,'moon'))return;var S=sky(sp,ymd);
+      if(S.f<0.88||!S.rise||!ok(S.T.sunset))return;
+      var d=mins(S.T.sunset,S.rise);if(Math.abs(d)>60)return;
+      var score=60+(S.f>=0.97?15:5)+(Math.abs(d)<=30?12:0)+Math.min(12,likes(sp,'moon'))+(sp.n&&likes(sp,'moon')/sp.n>0.3?10:0);
+      var aligned=sp.bearing!=null&&angDiff(S.riseAz,sp.bearing)<=5;
+      if(aligned)score+=25;
+      moonC.push({sp:sp,S:S,d:d,score:score,aligned:aligned});
+    });
+    if(moonC.length){
+      moonC.sort(function(a,b){return b.score-a.score});var b=moonC[0],S=b.S;
+      var full=S.f>=0.97;
+      ev.push({ymd:ymd,type:'moon',score:b.score,evening:true,
+        title:(full?'Full moon rises at sunset':'Nearly full moon rises at sunset'),
+        where:b.sp,
+        text:'The moon comes up at <b>'+t(S.rise)+'</b> in the '+dir(S.riseAz)+', '+beforeAfter(b.d,'sunset')+' ('+t(S.T.sunset)+'). '+
+          (b.aligned&&b.sp.id==='gb'?'From the waterfront park it rises <b>right behind the lighthouse</b>.':b.aligned?'It rises right on your favorite camera line.':'The sky should still have soft pastel color.'),
+        at:new Date(Math.min(S.rise,S.T.sunset)-25*6e4),start:S.rise,
+        also:moonC.slice(1,4).map(function(x){return x.sp.name})});
+    }
+    // Full moon setting at sunrise
+    var setC=[];
+    SPOTS.forEach(function(sp){
+      if(!has(sp,'moon')||sp.bearing!=null)return;var S=sky(sp,ymd);
+      if(S.f<0.9||!S.set||!ok(S.T.sunrise))return;var d=mins(S.T.sunrise,S.set);if(Math.abs(d)>40)return;
+      setC.push({sp:sp,S:S,d:d,score:58+Math.min(12,likes(sp,'moon'))+(sp.n&&likes(sp,'moon')/sp.n>0.3?10:0)+(Math.abs(d)<=20?8:0)});
+    });
+    if(setC.length){
+      setC.sort(function(a,b){return b.score-a.score});var c=setC[0];
+      ev.push({ymd:ymd,type:'moon',score:c.score,morning:true,title:'Full moon sets as the sun comes up',where:c.sp,
+        text:'The moon goes down in the west at <b>'+t(c.S.set)+'</b>, '+beforeAfter(c.d,'sunrise')+' ('+t(c.S.T.sunrise)+'). Look west while the eastern sky turns gold.',
+        at:new Date(Math.min(c.S.set,c.S.T.sunrise)-30*6e4),start:c.S.set,also:setC.slice(1,3).map(function(x){return x.sp.name})});
+    }
+    // Thin crescent after sunset / before sunrise
+    var home=byId.mb,H=sky(home,ymd);
+    if(H.f>=0.02&&H.f<=0.25){
+      var eve=H.phase<0.5,alt=eve?H.altDusk:H.altDawn;
+      if(alt>4){
+        var cands=SPOTS.filter(function(s){return has(s,'crescent')}).sort(function(a,b){return likes(b,'crescent')-likes(a,'crescent')});
+        var sp=cands[0]||home,S=sky(sp,ymd),az=eve?S.azDusk:S.azDawn,when=eve?S.T.dusk:S.T.dawn;
+        ev.push({ymd:ymd,type:'moon',score:58+(H.f<=0.15?12:0)+(alt>8?6:0),evening:eve,morning:!eve,
+          title:eve?'Thin crescent moon after sunset':'Thin crescent moon before sunrise',where:sp,
+          text:'A delicate sliver, only <b>'+Math.round(H.f*100)+'% lit</b>, low in the '+dir(az)+'. Best around <b>'+t(when)+'</b>'+(eve?', about 25 minutes after sunset.':', just before the sky gets bright.'),
+          at:new Date(when-20*6e4),start:when,also:cands.slice(1,3).map(function(x){return x.name})});
+      }
+    }
+    // Sun lining up with a camera line
+    SPOTS.forEach(function(sp){
+      if(sp.bearing==null)return;var S=sky(sp,ymd);
+      [['sunrise',S.sunRiseAz,S.T.sunrise],['sunset',S.sunSetAz,S.T.sunset]].forEach(function(x){
+        if(x[1]==null||angDiff(x[1],sp.bearing)>1.2)return;
+        var txt=sp.id==='jc'?'The sun comes up <b>lined up with the Manhattan streets</b> (reverse Manhattanhenge) at <b>'+t(x[2])+'</b>.':
+          'The sun '+(x[0]==='sunrise'?'rises':'sets')+' right on your favorite camera line at <b>'+t(x[2])+'</b>.';
+        ev.push({ymd:ymd,type:'sun',score:78,morning:x[0]==='sunrise',evening:x[0]==='sunset',title:x[0]==='sunrise'?'Sunrise lines up':'Sunset lines up',where:sp,text:txt,at:new Date(x[2]-30*6e4),start:x[2],also:[]});
+      });
+    });
+    // Moon already up in the golden-hour sky (half moon or more)
+    var mH=sky(byId.mb,ymd),mEveAlt=ok(mH.T.sunset)?Astro.moonPosition(mH.T.sunset,byId.mb.lat,byId.mb.lon).altitude:-90,mAmAlt=ok(mH.T.sunrise)?Astro.moonPosition(mH.T.sunrise,byId.mb.lat,byId.mb.lon).altitude:-90;
+    if(mH.f>=0.3&&mH.f<=0.88){
+      var eveM=mH.phase<0.5&&mEveAlt>=12,amM=mH.phase>0.5&&mAmAlt>=12;
+      if(eveM||amM){
+        var px=pickChain(ymd,!eveM),pz=eveM?Astro.moonPosition(mH.T.sunset,byId.mb.lat,byId.mb.lon):Astro.moonPosition(mH.T.sunrise,byId.mb.lat,byId.mb.lon);
+        ev.push({ymd:ymd,type:'moon',score:52,evening:eveM,morning:amM,kind:'moonsky',
+          title:eveM?'Moon in the golden-hour sky':'Moon over the sunrise',where:px.best.sp,
+          text:'A '+Math.round(mH.f*100)+'% lit moon will already be up, '+Math.round(pz.altitude)+'° high in the '+dir(pz.azimuth)+', while the '+(eveM?'sun sets':'sun rises')+' at <b>'+t(eveM?mH.T.sunset:mH.T.sunrise)+'</b>. Lovely with warm light on it.',
+          at:eveM?px.at:new Date(mH.T.sunrise-30*6e4),start:eveM?mH.T.sunset:mH.T.sunrise,also:px.also});
+      }
+    }
+    // Forecast-based moments (filled in by the twice-daily update)
+    [true,false].forEach(function(am){
+      var w=wxFor(byId.mb,ymd,am);if(!w)return;
+      var prev=am?wxFor(byId.mb,addDays(ymd,-1),false):wxFor(byId.mb,ymd,true);
+      var px=null,title=null,text=null,score=0;
+      if((w.snow||0)>=50){title=am?'Snow expected: a snowy sunrise':'Snow expected this evening';text='Snow is in the forecast. Fresh snow with warm light can be magical.';score=70}
+      else if(prev&&(prev.rain||0)>=60&&w.c>=20&&w.c<=75&&(w.rain||0)<35){title='Clearing after the rain';text='Rain clears out just before '+(am?'sunrise':'sunset')+'. Breaking clouds after a storm often make the most dramatic skies.';score=68}
+      else if(w.c>=25&&w.c<=65&&(w.rain||0)<30){title=am?'Colorful sunrise expected':'Colorful sunset expected';text='Some clouds but not too many, the best setup for a sky full of color.';score=60}
+      if(!title)return;
+      px=pickChain(ymd,am);
+      ev.push({ymd:ymd,type:'sun',score:score,evening:!am,morning:am,kind:'sky',title:title,where:px.best.sp,
+        text:text+' '+(am?'Sunrise':'Sunset')+' is at <b>'+t(px.main)+'</b>.',at:px.at,start:px.main,also:px.also});
+    });
+  }
+  // keep one sun-alignment card per spot per stretch of days (the best middle day)
+  var out=[],lastAlign={};
+  ev.sort(function(a,b){return a.ymd<b.ymd?-1:a.ymd>b.ymd?1:(a.morning?0:1)-(b.morning?0:1)||b.score-a.score});
+  ev.forEach(function(e){
+    if(e.type==='sun'){var k=e.where.id+e.title;if(lastAlign[k]&&lastAlign[k]>=addDays(e.ymd,-3)){lastAlign[k]=e.ymd;return}lastAlign[k]=e.ymd}
+    if(e.kind==='moonsky'){var pm=out.filter(function(o){return o.kind==='moonsky'&&o.ymd>=addDays(e.ymd,-1)})[0];if(pm)return}
+    if(e.title.indexOf('crescent')>=0){var prev=out.filter(function(o){return o.title===e.title&&o.ymd>=addDays(e.ymd,-3)})[0];if(prev){if(e.score>prev.score){out[out.indexOf(prev)]=e}return}}
+    out.push(e);
+  });
+  return out;
+}
+
+
+
+/* ---------- cloud forecast (filled in each evening) ---------- */
+function wxFor(sp,ymd,am){if(!WX||!WX.zones)return null;var w=WX.zones[sp.zone]||WX.zones.home;if(!w)return null;return w[ymd+(am?'am':'pm')]||null}
+function wxRead(w){
+  if(!w)return null;var c=w.c,lo=w.lo==null?null:w.lo,hi=w.hi==null?null:w.hi,rain=w.rain||0;
+  if(rain>=60)return{icon:'🌧️',txt:'Rain likely',sub:'Maybe a day to rest',bonus:-35,cls:'bad'};
+  if(c>=85||(lo!=null&&lo>=70))return{icon:'☁️',txt:'Very cloudy',sub:'Color is unlikely',bonus:-25,cls:'bad'};
+  if(c<=12)return{icon:'☀️',txt:'Clear sky',sub:'Clean, simple light',bonus:4,cls:'ok'};
+  if(hi!=null&&hi>=30&&(lo==null||lo<40))return{icon:'🌤️',txt:'Some high clouds',sub:'Great chance of colorful skies',bonus:15,cls:'good'};
+  if(c<=65)return{icon:'⛅',txt:'Partly cloudy',sub:'Good chance of color',bonus:10,cls:'good'};
+  return{icon:'🌥️',txt:'Mostly cloudy',sub:'Color possible through gaps',bonus:-6,cls:'meh'};
+}
+/* ---------- best spot for the next sunrise / sunset ---------- */
+var HOME=null;
+function km(a,b){var R=6371,r=Math.PI/180,dl=(b.lat-a.lat)*r,dn=(b.lon-a.lon)*r,x=Math.sin(dl/2)*Math.sin(dl/2)+Math.cos(a.lat*r)*Math.cos(b.lat*r)*Math.sin(dn/2)*Math.sin(dn/2);return 2*R*Math.asin(Math.sqrt(x))}
+function jitter(str){var h=0;for(var i=0;i<str.length;i++)h=(h*31+str.charCodeAt(i))|0;return Math.abs(h)%5}
+var MON=['January','February','March','April','May','June','July','August','September','October','November','December'];
+function pickSession(ymd,am,recent){recent=recent||{};
+  HOME=HOME||byId.mb;
+  var key=am?'sunrise':'sunset',month=+ymd.split('-')[1],a=ymd.split('-').map(Number),wd=new Date(Date.UTC(a[0],a[1]-1,a[2])).getUTCDay(),weekday=wd>=1&&wd<=5;
+  var res=[];
+  SPOTS.forEach(function(sp){
+    var S=sky(sp,ymd),T=S.T,why=[],sc=0;
+    var moonEv=!am&&S.f>0.6&&S.rise&&ok(T.sunset)&&mins(T.sunset,S.rise)>=-45&&mins(T.sunset,S.rise)<=75;
+    var hk=moonEv?'moon':key,h=(sp.hist&&sp.hist[hk])||{n:0,m:[],r:3},word=moonEv?'moonrise':key;
+    sc+=6*Math.log2(1+h.n)+(h.n?(h.r-3)*6:0);
+    if(h.n>=3)why.push('One of your favorite '+word+' spots');
+    if(h.m&&h.m[month-1]){sc+=6+2*Math.min(3,h.m[month-1]);if(h.m[month-1]>=2)why.push('Often beautiful here in '+MON[month-1])}
+    var f=sp.faces;
+    if(am&&(f==='E'||f==='B')){sc+=f==='E'?10:5;why.unshift('The sun comes up over the water')}
+    if(!am&&(f==='W'||f==='B')){sc+=f==='W'?10:6;why.unshift('The sun sets over the bay')}
+    if(!am&&f==='E')sc-=8;
+    var mh=(sp.hist&&sp.hist.moon)||{n:0},ch=(sp.hist&&sp.hist.crescent)||{n:0};
+    if(!am&&S.f>0.6&&S.rise&&ok(T.sunset)){var d=mins(T.sunset,S.rise);if(d>=-45&&d<=75){sc+=10+5*Math.log2(1+mh.n)+(sp.n&&mh.n/sp.n>0.3?12:0);var al=sp.bearing!=null&&angDiff(S.riseAz,sp.bearing)<=5;if(al)sc+=20;
+      if(f==='E')sc+=18;
+      why.unshift((S.f>0.95?'Full':'Bright')+' moon rises '+beforeAfter(d,'sunset')+(al&&sp.id==='gb'?', right behind the lighthouse':f==='E'?', over the water':''))}}
+    if(am&&S.f>0.6&&S.set&&ok(T.sunrise)){var d2=mins(T.sunrise,S.set);if(Math.abs(d2)<=45&&sp.bearing==null){sc+=8+4*Math.log2(1+mh.n);why.unshift('Bright moon setting in the west '+beforeAfter(d2,'sunrise'))}}
+    if(S.f>=0.02&&S.f<=0.3){var eve=S.phase<0.5;if(eve!==am&&(am?S.altDawn:S.altDusk)>4){sc+=6+5*Math.log2(1+ch.n);if(ch.n)why.push('A thin crescent moon will be up too ('+Math.round(S.f*100)+'% lit)')}}
+    if(sp.months&&sp.months.indexOf(month)>=0&&(sp.subjects.indexOf('foliage')>=0||sp.subjects.indexOf('flowers')>=0)){sc+=8;why.push(month>=9?'Fall colors are in season':'Blossoms are in season')}
+    if(sp.bearing!=null){var az=am?S.sunRiseAz:S.sunSetAz;if(az!=null&&angDiff(az,sp.bearing)<=1.5){sc+=30;why.unshift(sp.id==='jc'?'Sun lines up with the Manhattan streets':'Sun lines up with your favorite view')}}
+    var wr=wxRead(wxFor(sp,ymd,am));if(wr)sc+=wr.bonus;
+    var dist=km(HOME,sp);sc-=dist*(am&&weekday?0.4:0.2);
+    if(am&&!weekday&&f==='E'){sc+=7;why.push('A weekend morning, worth the drive to the ocean')}
+    if(recent[sp.id])sc-=recent[sp.id];
+    if(dist<6)why.push('Close to home');
+    if(!h.n&&sc<8)return;
+    sc+=jitter(ymd+sp.id+key)*0.6;
+    res.push({sp:sp,S:S,score:sc,why:why});
+  });
+  res.sort(function(x,y){return y.score-x.score});
+  var best=res[0],T=best.S.T;
+  return{ymd:ymd,am:am,best:best,also:res.slice(1,3).map(function(x){return x.sp.name}),
+    main:am?T.sunrise:T.sunset,
+    at:am?new Date(T.sunrise-30*6e4):(T.goldenPMStart||new Date(T.sunset-40*6e4)),
+    golden:am?[T.goldenAMStart,T.goldenAMEnd]:[T.goldenPMStart,T.goldenPMEnd],blue:am?[T.blueAMStart,T.blueAMEnd]:[T.bluePMStart,T.bluePMEnd]};
+}
+var chainCache={};
+function pickChain(ymd,am){
+  // pick each day in order from a few days back, gently rotating so similar days don't repeat one spot
+  var k=ymd+am;if(chainCache[k])return chainCache[k];
+  var day=addDays(ymd,-4),hist=[],res;
+  for(var i=0;i<=4;i++){
+    var rec={};if(hist[hist.length-1])rec[hist[hist.length-1]]=(rec[hist[hist.length-1]]||0)+9;if(hist[hist.length-2])rec[hist[hist.length-2]]=(rec[hist[hist.length-2]]||0)+4;
+    res=pickSession(day,am,rec);hist.push(res.best.sp.id);day=addDays(day,1);
+  }
+  chainCache[k]=res;return res;
+}
+function nextSessions(now){
+  var today=ymdOf(now),H=sky(byId.mb,today).T,out=[];
+  if(now<H.sunrise)out.push(pickChain(today,true),pickChain(today,false));
+  else if(now<H.sunset)out.push(pickChain(today,false),pickChain(addDays(today,1),true));
+  else out.push(pickChain(addDays(today,1),true),pickChain(addDays(today,1),false));
+  return out;
+}
+function sessionLabel(x,today){
+  var d=x.ymd===today?0:1;
+  return d===0?(x.am?'This morning':'This evening'):(x.am?'Tomorrow morning':'Tomorrow evening');
+}
+/* ---------- icons ---------- */
+function moonSvg(phase,f,size){
+  var r=size/2-1,c=size/2,rx=Math.abs(1-2*f)*r,wax=phase<0.5,top=c+' '+(c-r),bot=c+' '+(c+r),gib=f>0.5,p='';
+  if(f>0.98)p='<circle cx="'+c+'" cy="'+c+'" r="'+r+'" fill="#f6edd6"/>';
+  else if(f>0.02)p='<path fill="#f6edd6" d="M'+top+' A'+r+' '+r+' 0 0 '+(wax?1:0)+' '+bot+' A'+rx+' '+r+' 0 0 '+(wax?(gib?1:0):(gib?0:1))+' '+top+'"/>';
+  return'<svg width="'+size+'" height="'+size+'" viewBox="0 0 '+size+' '+size+'" aria-hidden="true"><circle cx="'+c+'" cy="'+c+'" r="'+r+'" fill="#2d3550"/>'+p+'</svg>';
+}
+function sunSvg(size){return'<svg width="'+size+'" height="'+size+'" viewBox="0 0 40 40" aria-hidden="true"><circle cx="20" cy="24" r="9" fill="#f0a530"/><g stroke="#f0a530" stroke-width="3" stroke-linecap="round"><path d="M20 6v5M7 13l3.5 3.5M33 13l-3.5 3.5M3 26h5M32 26h5"/></g><path d="M2 34h36" stroke="#c9814a" stroke-width="3" stroke-linecap="round"/></svg>'}
+
+/* ---------- links ---------- */
+function mapsUrl(sp){return'https://www.google.com/maps/dir/?api=1&destination='+sp.lat+','+sp.lon}
+function cloudsUrl(sp){return'https://clearoutside.com/forecast/'+sp.lat.toFixed(2)+'/'+sp.lon.toFixed(2)}
+function calUrl(e){
+  function z(d){return d.toISOString().replace(/[-:]/g,'').replace(/\.\d+/,'')}
+  var end=new Date(e.start.getTime()+45*6e4);
+  return'https://calendar.google.com/calendar/render?action=TEMPLATE&text='+encodeURIComponent('📷 '+e.title+' – '+e.where.name)+
+    '&dates='+z(e.at)+'/'+z(end)+'&location='+encodeURIComponent(e.where.lat+','+e.where.lon)+
+    '&details='+encodeURIComponent(e.text.replace(/<[^>]+>/g,'')+'\nBe there by '+t(e.at)+'.');
+}
+
+/* ---------- render ---------- */
+var state={spot:'mb',day:0,showAll:false};
+function whenLabel(e,today){
+  var d=e.ymd===today?0:e.ymd===addDays(today,1)?1:2;
+  if(d===0)return e.evening?'Tonight':e.morning?'This morning':'Today';
+  if(d===1)return e.evening?'Tomorrow evening':e.morning?'Tomorrow morning':'Tomorrow';
+  return dayName(e.ymd)+(e.evening?' · evening':e.morning?' · morning':'');
+}
+function render(){
+  var now=new Date(),today=ymdOf(now),hr=parts(now).h;
+  var greet=hr<12?'Good morning':hr<17?'Good afternoon':'Good evening';
+  var nx=nextSessions(now),nxKeys={};nx.forEach(function(x){nxKeys[x.ymd+(x.am?'am':'pm')]=1});
+  var events=findEvents(today,45).filter(function(e){return!(e.ymd===today&&e.start<now)});
+  events=events.filter(function(e){var k=e.ymd+(e.morning?'am':'pm');if(e.kind!=='sky')return true;if(nxKeys[k])return false;
+    return!events.some(function(o){return o!==e&&o.kind!=='sky'&&o.ymd===e.ymd&&!!o.morning===!!e.morning})});
+  var shown=state.showAll?events:events.slice(0,6);
+  var html='<div class="hello"><h1>'+greet+', Ragini</h1><p>'+dayName(today,true)+'. Here’s where to catch the light next.</p></div>';
+
+  html+='<h2 class="section-title">Next up</h2><p class="section-sub">Your best spot for the next sunrise and sunset.</p>';
+  nx.forEach(function(x,i){
+    var b=x.best,sp=b.sp;
+    html+='<article class="event pick'+(i===0?' soon':'')+'"><span class="when">'+sessionLabel(x,today)+' · '+dayName(x.ymd)+'</span>'+
+      '<h3>'+(x.am?sunSvg(38):'<svg width="38" height="38" viewBox="0 0 40 40" aria-hidden="true"><path d="M8 28a12 12 0 0 1 24 0z" fill="#e8823a"/><path d="M2 32h36" stroke="#b5562c" stroke-width="3" stroke-linecap="round"/><path d="M6 37h28" stroke="#b5562c" stroke-width="2" stroke-linecap="round" opacity=".5"/></svg>')+
+      '<span>'+sp.name+'</span></h3><div class="where">📍 '+sp.area+'</div>'+
+      (function(){var wr=wxRead(wxFor(sp,x.ymd,x.am));return wr?'<div class="sky '+wr.cls+'"><span>'+wr.icon+'</span><div><b>'+wr.txt+'</b><small>'+wr.sub+'</small></div></div>':''})()+
+      (b.why.length?'<ul class="why">'+b.why.slice(0,3).map(function(w){return'<li>'+w+'</li>'}).join('')+'</ul>':'')+
+      '<div class="times2"><div><span>Be there by</span><b>'+t(x.at)+'</b></div><div><span>'+(x.am?'Sunrise':'Sunset')+'</span><b>'+t(x.main)+'</b></div><div><span>Golden light</span><b>'+t(x.golden[0])+' – '+t(x.golden[1])+'</b></div></div>'+
+      (x.also.length?'<div class="also">Also good: '+x.also.join(', ')+'</div>':'')+
+      '<div class="btns"><a class="btn main" href="'+mapsUrl(sp)+'" target="_blank" rel="noopener">🧭 Directions</a></div></article>';
+  });
+  html+='<h2 class="section-title">Special moments ahead</h2><p class="section-sub">Moon moments, colorful skies and more at your favorite places.</p>';
+  if(!events.length)html+='<p class="empty">Nothing special in the sky in the next few weeks. Enjoy your regular sunrises and sunsets!</p>';
+  shown.forEach(function(e){
+    var S=sky(e.where,e.ymd),soon=e.ymd===today||e.ymd===addDays(today,1);
+    html+='<article class="event '+(e.type==='moon'?'moon':'')+(soon?' soon':'')+'"><span class="when">'+whenLabel(e,today)+'</span>'+
+      '<h3>'+(e.type==='moon'?moonSvg(S.phase,S.f,38):sunSvg(38))+'<span>'+e.title+'</span></h3>'+
+      '<div class="where">📍 <b>'+e.where.name+'</b>, '+e.where.area+'</div>'+
+      '<p>'+e.text+'</p>'+
+      (function(){var wr=wxRead(wxFor(e.where,e.ymd,!!e.morning));return wr?'<div class="sky '+wr.cls+'"><span>'+wr.icon+'</span><div><b>'+wr.txt+'</b><small>'+wr.sub+'</small></div></div>':''})()+
+      '<div class="bethere">Be there by <b>'+t(e.at)+'</b></div>'+
+      (e.also&&e.also.length?'<div class="also">Also good: '+e.also.join(', ')+'</div>':'')+
+      '<div class="btns"><a class="btn main" href="'+mapsUrl(e.where)+'" target="_blank" rel="noopener">🧭 Directions</a>'+
+      '<a class="btn" href="'+calUrl(e)+'" target="_blank" rel="noopener">🗓️ Add to calendar</a></div></article>';
+  });
+  if(events.length>6&&!state.showAll)html+='<button class="btn more" data-a="all">Show '+(events.length-6)+' more</button>';
+
+  // Today's light
+  var sp=byId[state.spot],ymd=addDays(today,state.day),S=sky(sp,ymd),T=S.T;
+  html+='<h2 class="section-title">Light times</h2><p class="section-sub">Pick a place to see its sunrise, sunset and golden hours.</p><div class="today">'+
+    '<select id="spot" aria-label="Choose a place">'+SPOTS.slice().sort(function(a,b){return b.n-a.n}).map(function(s){return'<option value="'+s.id+'"'+(s.id===sp.id?' selected':'')+'>'+s.name+'</option>'}).join('')+'</select>'+
+    '<div class="daynav">'+['Today','Tomorrow',dayName(addDays(today,2)).split(',')[0]].map(function(l,i){return'<button data-a="day" data-n="'+i+'" class="'+(i===state.day?'on':'')+'">'+l+'</button>'}).join('')+'</div>'+
+    row('🌅','#fdf1d9','Sunrise','',t(T.sunrise))+
+    row('✨','#fdf1d9','Morning golden light','Warm, soft light',t(T.goldenAMStart)+' – '+t(T.goldenAMEnd))+
+    row('✨','#fdf1d9','Evening golden light','Warm, soft light',t(T.goldenPMStart)+' – '+t(T.goldenPMEnd))+
+    row('🌇','#fdf1d9','Sunset','',t(T.sunset))+
+    row('💙','#e6edf8','Blue hour','Deep blue sky after sunset',t(T.bluePMStart)+' – '+t(T.bluePMEnd))+
+    row(moonSvg(S.phase,S.f,30),'#e8eaf1',Astro.phaseName(S.phase),Math.round(S.f*100)+'% lit',(S.rise?'Rises '+t(S.rise):'')+(S.rise&&S.set?'<br>':'')+(S.set?'Sets '+t(S.set):''))+
+    '<div class="btns"><a class="btn" href="'+mapsUrl(sp)+'" target="_blank" rel="noopener">🧭 Directions</a></div></div>';
+
+  // In season
+  var m=+today.split('-')[1],inSeason=SPOTS.filter(function(s){return s.months&&s.months.indexOf(m)>=0});
+  var tips={hp:'fall colors by your bench (cherry blossoms in April)',tp:'deep reds around the cabin at sunset',at:'autumn colors by the lake',ak:'festival lights at blue hour',th:'misty golden mornings'};
+  if(inSeason.length){
+    html+='<h2 class="section-title">In season right now</h2><div class="season"><ul>'+inSeason.map(function(s){return'<li><b>'+s.name+'</b>: '+(tips[s.id]||'in season')+'</li>'}).join('')+'</ul></div>';
+  }
+  html+='<p class="foot">Made with love for your photography 📷<br>All times are Eastern time.</p>';
+  document.getElementById('app').innerHTML=html;
+}
+function row(ic,bg,l,sub,tm){return'<div class="row"><div class="ic" style="background:'+bg+'">'+ic+'</div><div class="lbl">'+l+(sub?'<small>'+sub+'</small>':'')+'</div><div class="tm">'+tm+'</div></div>'}
+document.addEventListener('click',function(e){var b=e.target.closest('[data-a]');if(!b)return;
+  if(b.dataset.a==='all'){state.showAll=true;render()}
+  if(b.dataset.a==='day'){state.day=+b.dataset.n;render()}});
+document.addEventListener('change',function(e){if(e.target.id==='spot'){state.spot=e.target.value;render()}});
+render();
+loadForecast();
+setInterval(function(){chainCache={};render()},10*60*1000);
+setInterval(loadForecast,60*60*1000);
+})();
+</script>
+</body>
+</html>
